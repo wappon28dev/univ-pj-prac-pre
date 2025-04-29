@@ -1,0 +1,15 @@
+{
+  "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
+  "ignorePaths": [
+    "package.json"
+  ],
+  "words": [
+    "Kaisei Decol",
+    "kaisei-decol",
+    "outdir",
+    "pandacss",
+    "skyblue",
+    "UDEV Gothic 35JPDOC",
+    "unplugin"
+  ]
+}
