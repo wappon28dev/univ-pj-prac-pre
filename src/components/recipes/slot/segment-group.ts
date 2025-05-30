@@ -2,7 +2,7 @@ import { segmentGroupAnatomy } from "@ark-ui/react";
 import { sva } from "panda/css";
 
 export const svaSegmentGroup = sva({
-  className: "segment-group",
+  className: "sva_segment-group",
   slots: segmentGroupAnatomy.keys(),
   base: {
     root: {

@@ -2,7 +2,7 @@ import { toastAnatomy } from "@ark-ui/react";
 import { sva } from "panda/css";
 
 export const svaToast = sva({
-  className: "toast",
+  className: "sva_toast",
   slots: toastAnatomy.keys(),
   base: {
     root: {

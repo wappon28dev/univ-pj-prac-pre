@@ -1,16 +1,16 @@
 import type { ReactElement } from "react";
+import type { Booth } from "@/lib/booth";
 import { HStack, styled as p, VStack } from "panda/jsx";
 import PlaySymbols from "~icons/material-symbols/play-shapes";
-import TargetArrow from "~icons/tabler/target-arrow";
-import { Button } from "./_panda/cva/Button";
+import { Button } from "./recipes/atomic/Button";
 
-export function StallCard(): ReactElement {
+export function BoothCard({ booth }: { booth: Booth }): ReactElement {
   return (
     <VStack bg="bg-variant" p="5" rounded="xl">
       <HStack justifyContent="space-between" w="full">
         <HStack fontSize="xl">
-          <TargetArrow />
-          <p.p>射的</p.p>
+          <booth.icon />
+          <p.p>{booth.name}</p.p>
         </HStack>
         <p.div>
           ねだん

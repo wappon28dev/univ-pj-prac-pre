@@ -2,7 +2,7 @@ import { popoverAnatomy } from "@ark-ui/react";
 import { sva } from "panda/css";
 
 export const svaPopover = sva({
-  className: "popover",
+  className: "sva_popover",
   slots: popoverAnatomy.keys(),
   base: {
     content: {

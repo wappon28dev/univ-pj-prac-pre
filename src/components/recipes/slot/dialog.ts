@@ -2,7 +2,7 @@ import { dialogAnatomy } from "@ark-ui/react";
 import { sva } from "panda/css";
 
 export const svaDialog = sva({
-  className: "dialog",
+  className: "sva_dialog",
   slots: dialogAnatomy.keys(),
   base: {
     content: {

@@ -39,7 +39,8 @@ export const cvaButton = cva({
         _enabled: { _hover: { bg: "colorPalette/5" } },
       },
       text: {
-        bg: "colorPalette/5",
+        // eslint-disable-next-line @pandacss/no-hardcoded-color
+        bg: "transparent",
         color: "colorPalette",
         _enabled: { _hover: { bg: "colorPalette/10" } },
       },
