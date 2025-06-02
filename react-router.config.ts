@@ -1,8 +1,11 @@
 import type { Config } from "@react-router/dev/config";
+import { booths } from "./src/lib/booth";
 
 export default {
-  // Config options...
-  // Server-side render by default, to enable SPA mode set this to `false`
-  ssr: true,
+  ssr: false,
   appDirectory: "src",
+
+  async prerender() {
+    return booths.map(({ id }) => `/booths/${id}`);
+  },
 } satisfies Config;

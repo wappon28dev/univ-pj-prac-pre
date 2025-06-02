@@ -1,18 +1,17 @@
 import type { ReactElement } from "react";
 import type { Route } from "./+types/_index";
-import { Button } from "@/components/_panda/cva/Button";
-import { cvaExpanded, Expanded } from "@/components/_panda/cva/Expanded";
-import { StallCard } from "@/components/StallCard";
 import { css } from "panda/css";
 import { Flex, Grid, HStack, styled as p, VStack } from "panda/jsx";
-import PlaySymbols from "~icons/material-symbols/play-shapes";
-import TargetArrow from "~icons/tabler/target-arrow";
+import { Link } from "react-router";
+import NoteStack from "virtual:icons/material-symbols/note-stack";
+import PlaySymbols from "virtual:icons/material-symbols/play-shapes";
+import { BoothCard } from "@/components/BoothCard";
+import { Button } from "@/components/recipes/atomic/Button";
+import { Expanded } from "@/components/recipes/atomic/Expanded";
+import { booths } from "@/lib/booth";
 
 export function meta(): Route.MetaDescriptors {
-  return [
-    { title: "New React Router App" },
-    { name: "description", content: "Welcome to React Router!" },
-  ];
+  return [{ title: "夏祭り in 予算" }];
 }
 
 export default function (): ReactElement {
@@ -41,12 +40,22 @@ export default function (): ReactElement {
             夏祭り
           </p.p>
           <p.p fontSize="2xl" mt="-1rem">in 予算</p.p>
-          <Button variant="filled">
-            <HStack>
-              <p.p>はじめから遊ぶ</p.p>
-              <PlaySymbols />
-            </HStack>
-          </Button>
+          <HStack>
+            <Button variant="filled">
+              <HStack>
+                <p.p>はじめから遊ぶ</p.p>
+                <PlaySymbols />
+              </HStack>
+            </Button>
+            <Link to="/booths/demo">
+              <Button variant="filled">
+                <HStack>
+                  <p.p>デモ</p.p>
+                  <NoteStack />
+                </HStack>
+              </Button>
+            </Link>
+          </HStack>
         </VStack>
         <p.div
           bg="bg"
@@ -59,14 +68,12 @@ export default function (): ReactElement {
         >
           <Grid
             gap="5"
-            gridTemplateColumns="repeat(auto-fit, minmax(300px, 1fr))"
+            gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
             w="full"
           >
-            <StallCard />
-            <StallCard />
-            <StallCard />
-            <StallCard />
-            <StallCard />
+            {booths.map((booth) => (
+              <BoothCard booth={booth} key={booth.id} />
+            ))}
           </Grid>
         </p.div>
       </Flex>

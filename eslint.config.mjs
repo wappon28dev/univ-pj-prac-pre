@@ -72,7 +72,7 @@ export default antfu(
       },
     },
     formatters: true,
-    isInEditor: true,
+    isInEditor: false,
   },
   {
     files: ["src/**/*.{ts,tsx}"],

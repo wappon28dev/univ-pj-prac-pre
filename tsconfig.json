@@ -24,6 +24,7 @@
     "noEmit": true,
     "outDir": "dist",
     "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
     "verbatimModuleSyntax": true,
     "skipLibCheck": true
   },

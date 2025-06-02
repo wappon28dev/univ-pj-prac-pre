@@ -7,7 +7,7 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router";
-import { Expanded } from "./components/_panda/cva/Expanded";
+import { Expanded } from "./components/recipes/atomic/Expanded";
 import stylesheet from "./styles/index.css?url";
 import "@fontsource/kaisei-decol";
 

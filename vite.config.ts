@@ -9,7 +9,6 @@ export default defineConfig({
   css: {
     postcss: {
       plugins: [
-        // @ts-expect-error: なぜか型エラーが出る
         pandacss,
         autoprefixer,
       ],
