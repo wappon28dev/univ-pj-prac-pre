@@ -1,14 +1,150 @@
 <!doctype html>
-<html lang="ja-JP">
+<html lang="ja">
   <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Page Title</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <script src="index.js"></script>
-    <script src="shared-data.js"></script>
+    <meta charset="UTF-8" />
+    <title>テスト</title>
   </head>
   <body>
-    <h1>Hey!</h1>
+    <h1>スペースでリング発射,命中判定,矢印で角度調整</h1>
+    <canvas id="gameCanvas" width="1200" height="600" style="border: 1px solid #000; width: 100%"></canvas>
+
+    <script>
+      let canvas = document.getElementById("gameCanvas");
+      let ctx = canvas.getContext("2d");
+
+      let charging = false;
+      let power = 0;
+      const maxPower = 100;
+      let ring = null;
+      let angle = -Math.PI / 2; // 初期角度
+      const angleStep = Math.PI / 90; // 角度調整差分
+      let hitTarget = null; //あたったターゲットを持っておく
+      const targets = [
+        { x: 230, y: 370, radius: 20, color: "blue", message: "ブルーを獲得！" },
+        { x: 500, y: 350, radius: 20, color: "red", message: "レッドを獲得！" },
+        { x: 700, y: 350, radius: 20, color: "green", message: "グリーンを獲得！" },
+        { x: 250, y: 200, radius: 20, color: "yellow", message: "イエローを獲得！" },
+        { x: 450, y: 210, radius: 20, color: "black", message: "ブラックを獲得！" },
+        { x: 750, y: 200, radius: 20, color: "orange", message: "オレンジを獲得！" },
+      ];
+
+      const resist = 0.98; //空気抵抗
+
+      console.log(new SharedData().version);
+
+      //スペース押されたらチャージ開始(charging = true,power=0)
+      document.addEventListener("keydown", (e) => {
+        if (e.code === "Space" && !charging && !ring) {
+          charging = true;
+          power = 0;
+        } else if (e.code === "ArrowLeft") {
+          angle -= angleStep;
+        } else if (e.code === "ArrowRight") {
+          angle += angleStep;
+        }
+      });
+
+      //スペース離したらチャージ終了(charging = false,power に応じた速度でリングを作成)
+      document.addEventListener("keyup", (e) => {
+        if (e.code === "Space" && charging) {
+          charging = false;
+          ring = {
+            //構造体ringを作成し初期化(みたいな感じ)
+            x: 500,
+            y: 600,
+            v_x: (power / 5) * Math.cos(angle), //速度の加速値
+            v_y: (power / 5) * Math.sin(angle) * -1, //速度の加速値
+            radius: 30,
+            hit: false,
+          };
+          power = 0;
+        }
+      });
+
+      //状態の更新
+      function update() {
+        if (charging && power < maxPower) {
+          //チャージがtrueの間power増加
+          power += 1;
+        }
+        if (ring) {
+          //リングがtrueの間リング加速,摩擦で減速
+          ring.x += ring.v_x;
+          ring.v_x *= resist;
+          ring.y -= ring.v_y;
+          ring.v_y *= resist;
+
+          if (ring.v_y < 0.7) {
+            //リングの加速値が0.7未満でリング停止
+            ring.v_y = 0;
+            for (const target of targets) {
+              //リングとターゲットの距離を保存
+              const dist = Math.hypot(ring.x - target.x, ring.y - target.y);
+              if (dist < ring.radius) {
+                hitTarget = target;
+                break;
+              }
+            }
+            setTimeout(() => {
+              //1秒後(1000)にring消して判定用の距離をリセット
+              ring = null;
+              hitTarget = null;
+            }, 1000);
+          }
+        }
+      }
+
+      //描画
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // ガイドライン
+        if (!ring) {
+          ctx.strokeStyle = "gray";
+          ctx.beginPath();
+          ctx.moveTo(500, 600); //線の始点
+          ctx.lineTo(500 + 200 * Math.cos(angle), 600 - 200 * Math.sin(-angle)); //線の終点(長さ200)
+          ctx.stroke();
+        }
+        // リング
+        if (ring) {
+          ctx.beginPath();
+          ctx.arc(ring.x, ring.y, ring.radius, 0, Math.PI * 2); //ring.x += ring.v_x;を反映
+          ctx.lineWidth = 5;
+          ctx.stroke();
+        }
+        // パワー
+        if (charging) {
+          ctx.fillStyle = "green";
+          ctx.fillRect(50, 50, power * 3, 20); //power += 1;を反映
+          ctx.strokeStyle = "black";
+          ctx.strokeRect(50, 50, maxPower * 3, 20);
+        }
+        //ターゲット(ループで描画)
+        for (const target of targets) {
+          //配列targetsの各要素をtargetという変数に入れていく繰り返し
+          ctx.beginPath();
+          ctx.arc(target.x, target.y, target.radius, 0, Math.PI * 2);
+          ctx.fillStyle = target.color;
+          ctx.fill();
+        }
+        //メッセージ
+        if (ring && hitTarget) {
+          //ターゲットにあたった時の処理
+          ctx.fillStyle = "black";
+          ctx.font = "30px sans-serif";
+          ctx.textAlign = "center";
+          ctx.fillText(hitTarget.message, canvas.width / 2, 100);
+        }
+      }
+
+      function loop() {
+        update(); // 状態の更新
+        draw(); // 描画処理
+        requestAnimationFrame(loop); // 次のフレームで再度 loop 関数を呼び出す
+      }
+
+      //初期呼び出し
+      loop();
+    </script>
   </body>
 </html>

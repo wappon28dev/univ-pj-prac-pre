@@ -1,11 +1,12 @@
 import type { ReactElement } from "react";
 import type { Route } from "./+types/booths.$id";
 import type { Booth } from "@/lib/booth";
+import { Icon } from "@iconify/react";
 import { css } from "panda/css";
 import { Grid, HStack, styled as p } from "panda/jsx";
 import { data, Link } from "react-router";
-import ArrowBack from "virtual:icons/material-symbols/arrow-back";
-import NoteStack from "virtual:icons/material-symbols/note-stack";
+// import ArrowBack from "virtual:icons/material-symbols/arrow-back";
+// import NoteStack from "virtual:icons/material-symbols/note-stack";
 import { Button } from "@/components/recipes/atomic/Button";
 import { booths } from "@/lib/booth";
 
@@ -72,13 +73,15 @@ export default async function ({ loaderData }: Route.ComponentProps): Promise<Re
         <Link to="/" viewTransition>
           <Button size="sm" variant="text">
             <HStack>
-              <ArrowBack />
+              {/* <ArrowBack /> */}
+              <Icon icon="material-symbols:arrow-back" />
               <p.p>祭り広場</p.p>
             </HStack>
           </Button>
         </Link>
         <HStack>
-          <NoteStack />
+          {/* <NoteStack /> */}
+          <Icon icon="material-symbols:note-stack" />
           <p.p fontSize="lg" fontWeight="bold">
             {booth.name}
           </p.p>

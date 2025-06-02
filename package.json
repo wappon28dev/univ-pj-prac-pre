@@ -15,6 +15,7 @@
   "dependencies": {
     "@ark-ui/react": "^5.7.0",
     "@fontsource/kaisei-decol": "^5.2.5",
+    "@iconify/react": "^6.0.0",
     "@nanostores/react": "^1.0.0",
     "@react-router/fs-routes": "^7.5.3",
     "@react-router/node": "^7.5.3",
