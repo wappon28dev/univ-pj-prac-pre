@@ -1,0 +1,9 @@
+[submodule "public/booths/embed/shateki"]
+	path = public/booths/embed/shateki
+	url = https://gist.githubusercontent.com/kuwabatakenonaka/a34872e626e395ade853b0d40b6481cd
+[submodule "public/booths/embed/katanuki"]
+	path = public/booths/embed/katanuki
+	url = https://gist.githubusercontent.com/kurageee/742717baf3729f763ee7b10e30ce8e22/
+[submodule "public/booths/embed/wanage"]
+	path = public/booths/embed/wanage
+	url = https://gist.githubusercontent.com/Haruhisa222/7ae43a105e7c46eea3edc83c8a7eb31e/

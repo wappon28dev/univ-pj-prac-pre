@@ -1,10 +1,10 @@
-import type { ReactElement } from "react";
 import type { Booth } from "@/lib/booth";
+import type { ReactElement } from "react";
 import { Icon } from "@iconify/react";
 import { css } from "panda/css";
 import { HStack, styled as p, VStack } from "panda/jsx";
 import { Link } from "react-router";
-// import PlaySymbols from "virtual:icons/material-symbols/play-shapes";
+import PlaySymbols from "virtual:icons/material-symbols/play-shapes";
 import { Button } from "./recipes/atomic/Button";
 
 export function BoothCard({ booth }: { booth: Booth }): ReactElement {
@@ -12,7 +12,6 @@ export function BoothCard({ booth }: { booth: Booth }): ReactElement {
     <VStack bg="bg-variant" p="5" rounded="xl">
       <HStack justifyContent="space-between" w="full">
         <HStack fontSize="xl">
-          {/* <booth.icon /> */}
           <Icon icon={booth.icon} />
           <p.p>{booth.name}</p.p>
         </HStack>
@@ -25,8 +24,7 @@ export function BoothCard({ booth }: { booth: Booth }): ReactElement {
         <Button rounded="0" roundedBottom="lg" variant="filled" w="full">
           <HStack justifyContent="center">
             <p.p>遊ぶ</p.p>
-            {/* <PlaySymbols /> */}
-            <Icon icon="material-symbols:play-shapes" />
+            <PlaySymbols />
           </HStack>
         </Button>
       </Link>
