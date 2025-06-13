@@ -1,9 +1,14 @@
+import type { Booth } from "@/lib/booth";
 import type { ReactElement } from "react";
+import { Button } from "@/components/recipes/atomic/Button";
+import { svaFloatingPanel } from "@/components/recipes/slot/floating-panel";
 import { FloatingPanel, Portal } from "@ark-ui/react";
+import { persistentAtom } from "@nanostores/persistent";
 import { useStore } from "@nanostores/react";
 import { atom } from "nanostores";
 import { css } from "panda/css";
 import { Grid, HStack, styled as p, VStack } from "panda/jsx";
+import { useEffect } from "react";
 import { Link } from "react-router";
 import ArrowBack from "virtual:icons/material-symbols/arrow-back";
 import BugReport from "virtual:icons/material-symbols/bug-report";
@@ -12,10 +17,26 @@ import Minimize from "virtual:icons/material-symbols/chrome-minimize";
 import Close from "virtual:icons/material-symbols/close";
 import CloseFullscreen from "virtual:icons/material-symbols/close-fullscreen";
 import NoteStack from "virtual:icons/material-symbols/note-stack";
-import { Button } from "@/components/recipes/atomic/Button";
-import { svaFloatingPanel } from "@/components/recipes/slot/floating-panel";
 
-const $frameSrc = atom("http://127.0.0.1:8080/");
+const $frameSrc = atom("http://127.0.0.1:3000/index.html");
+type SharedData = {
+  booths: Booth[];
+  budget: number;
+  souvenirs: Array<{
+    id: string;
+    name: string;
+    imageUrl: string;
+  }>;
+};
+
+export const $sharedData = persistentAtom<SharedData>("shared-data", {
+  booths: [],
+  budget: 0,
+  souvenirs: [],
+}, {
+  encode: JSON.stringify,
+  decode: JSON.parse,
+});
 
 function DebugPanelBody(): ReactElement {
   const frameSrc = useStore($frameSrc);
@@ -102,6 +123,21 @@ function DebugPanel(): ReactElement {
 export default function (): ReactElement {
   const frameSrc = useStore($frameSrc);
 
+  useEffect(() => {
+    void (async () => {
+      let count = 0;
+      while (count < 10) {
+        window.postMessage({
+          type: "SHARED_DATA::sync",
+          data: $sharedData.get(),
+        }, "*");
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        count++;
+        console.log("SHARED_DATA::sync", count);
+      }
+    })();
+  }, []);
+
   return (
     <Grid
       gap="0"
@@ -119,7 +155,6 @@ export default function (): ReactElement {
             h: "full",
             roundedBottom: "lg",
           })}
-          sandbox="allow-scripts"
           src={frameSrc}
           title="屋台"
         >
