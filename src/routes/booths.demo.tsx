@@ -1,14 +1,14 @@
-import type { Booth } from "@/lib/booth";
 import type { ReactElement } from "react";
 import { Button } from "@/components/recipes/atomic/Button";
 import { svaFloatingPanel } from "@/components/recipes/slot/floating-panel";
+import { waitMs } from "@/lib/utils";
+import { $sharedData } from "@/lib/utils/shared-data";
 import { FloatingPanel, Portal } from "@ark-ui/react";
-import { persistentAtom } from "@nanostores/persistent";
 import { useStore } from "@nanostores/react";
 import { atom } from "nanostores";
 import { css } from "panda/css";
 import { Grid, HStack, styled as p, VStack } from "panda/jsx";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Link } from "react-router";
 import ArrowBack from "virtual:icons/material-symbols/arrow-back";
 import BugReport from "virtual:icons/material-symbols/bug-report";
@@ -19,25 +19,6 @@ import CloseFullscreen from "virtual:icons/material-symbols/close-fullscreen";
 import NoteStack from "virtual:icons/material-symbols/note-stack";
 
 const $frameSrc = atom("http://127.0.0.1:3000/index.html");
-type SharedData = {
-  booths: Booth[];
-  budget: number;
-  souvenirs: Array<{
-    id: string;
-    name: string;
-    imageUrl: string;
-  }>;
-};
-
-export const $sharedData = persistentAtom<SharedData>("shared-data", {
-  booths: [],
-  budget: 0,
-  souvenirs: [],
-}, {
-  encode: JSON.stringify,
-  decode: JSON.parse,
-});
-
 function DebugPanelBody(): ReactElement {
   const frameSrc = useStore($frameSrc);
 
@@ -122,18 +103,35 @@ function DebugPanel(): ReactElement {
 
 export default function (): ReactElement {
   const frameSrc = useStore($frameSrc);
+  const embedRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
-    void (async () => {
+    void (async (): Promise<void> => {
       let count = 0;
-      while (count < 10) {
-        window.postMessage({
-          type: "SHARED_DATA::sync",
+
+      while (count < 20) {
+        if (embedRef.current == null) {
+          console.error("Embed iframe is not available.");
+          return;
+        }
+
+        if (embedRef.current.contentWindow == null) {
+          console.error("Embed iframe contentWindow is not available.");
+          return;
+        }
+
+        if (count % 5 === 0) {
+          // eslint-disable-next-line no-console
+          console.log(`[SHARED_DATA] (${count + 1}/20) 共用データを送信中...`);
+        }
+
+        embedRef.current.contentWindow.postMessage({
+          type: "SHARED_DATA::sync-response",
           data: $sharedData.get(),
         }, "*");
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        await waitMs(1000);
         count++;
-        console.log("SHARED_DATA::sync", count);
       }
     })();
   }, []);
@@ -149,12 +147,14 @@ export default function (): ReactElement {
         bg="bg-variant"
         w="full"
       >
+        {/* eslint-disable-next-line react-dom/no-missing-iframe-sandbox */}
         <iframe
           className={css({
             w: "full",
             h: "full",
             roundedBottom: "lg",
           })}
+          ref={embedRef}
           src={frameSrc}
           title="屋台"
         >
@@ -166,7 +166,10 @@ export default function (): ReactElement {
         w="full"
       >
         <Link to="/" viewTransition>
-          <Button size="sm" variant="text">
+          <Button
+            size="sm"
+            variant="text"
+          >
             <HStack>
               <ArrowBack />
               <p.p>祭り広場</p.p>

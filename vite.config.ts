@@ -19,4 +19,7 @@ export default defineConfig({
     tsconfigPaths(),
     Icons({ autoInstall: true, compiler: "jsx", jsx: "react" }),
   ],
+  server: {
+    cors: true,
+  },
 });

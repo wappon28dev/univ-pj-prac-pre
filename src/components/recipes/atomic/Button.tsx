@@ -11,13 +11,11 @@ export const cvaButton = cva({
     _disabled: {
       cursor: "not-allowed",
       opacity: 0.4,
-      _hover: {
-        // eslint-disable-next-line @pandacss/no-hardcoded-color
-        bg: "initial",
-      },
     },
-    _hover: {
-      bg: "colorPalette/10",
+    _enabled: {
+      _hover: {
+        bg: "colorPalette/10",
+      },
     },
   },
   variants: {
@@ -39,7 +37,7 @@ export const cvaButton = cva({
         _enabled: { _hover: { bg: "colorPalette/5" } },
       },
       text: {
-        // eslint-disable-next-line @pandacss/no-hardcoded-color
+
         bg: "transparent",
         color: "colorPalette",
         _enabled: { _hover: { bg: "colorPalette/10" } },

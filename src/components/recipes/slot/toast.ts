@@ -33,6 +33,8 @@ export const svaToast = sva({
     description: {
       fontSize: "sm",
     },
-    closeTrigger: {},
+    closeTrigger: {
+      cursor: "pointer",
+    },
   },
 });

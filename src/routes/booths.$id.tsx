@@ -1,13 +1,20 @@
 import type { Booth } from "@/lib/booth";
+import type { SharedData } from "@/lib/utils/shared-data";
 import type { ReactElement } from "react";
 import type { Route } from "./+types/booths.$id";
 import { Button } from "@/components/recipes/atomic/Button";
 import { booths } from "@/lib/booth";
+import { waitMs } from "@/lib/utils";
+import { $sharedData } from "@/lib/utils/shared-data";
+import { useStore } from "@nanostores/react";
+import { computed } from "nanostores";
 import { css } from "panda/css";
 import { Grid, HStack, styled as p } from "panda/jsx";
+import { useEffect, useRef } from "react";
 import { data, Link } from "react-router";
-import ArrowBack from "virtual:icons/material-symbols/arrow-back";
-import NoteStack from "virtual:icons/material-symbols/note-stack";
+import ArrowBack from "~icons/material-symbols/arrow-back";
+import MoneyBag from "~icons/material-symbols/money-bag";
+import NoteStack from "~icons/material-symbols/note-stack";
 
 export function meta({ params }: Route.MetaArgs): Route.MetaDescriptors {
   const id = params.id;
@@ -30,8 +37,55 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs): Promise<
   return booth;
 }
 
-export default async function ({ loaderData }: Route.ComponentProps): Promise<ReactElement> {
+export default function ({ loaderData }: Route.ComponentProps): ReactElement {
   const booth = loaderData;
+  const embedRef = useRef<HTMLIFrameElement>(null);
+  const $sharedBudget = computed($sharedData, ({ budget }) => budget);
+  const sharedBudget = useStore($sharedBudget);
+
+  useEffect(() => {
+    const handler = (event: MessageEvent): void => {
+      if (event.data.type === "SHARED_DATA::set") {
+        // eslint-disable-next-line no-console
+        console.log("[SHARED_DATA] 共用データを受信しました", event.data.data);
+        $sharedData.set(event.data.data as SharedData);
+      }
+    };
+
+    window.addEventListener("message", handler);
+
+    return (): void => {
+      window.removeEventListener("message", handler);
+    };
+  }, []);
+
+  useEffect(() => {
+    void (async (): Promise<void> => {
+      let count = 0;
+
+      while (count < 5) {
+        if (embedRef.current == null) {
+          console.error("Embed iframe is not available.");
+          return;
+        }
+
+        if (embedRef.current.contentWindow == null) {
+          console.error("Embed iframe contentWindow is not available.");
+          return;
+        }
+
+        // eslint-disable-next-line no-console
+        console.log(`[SHARED_DATA] (${count + 1}/5) 共用データを送信中...`);
+        embedRef.current.contentWindow.postMessage({
+          type: "SHARED_DATA::sync-response",
+          data: $sharedData.get(),
+        }, "*");
+
+        await waitMs(1000);
+        count++;
+      }
+    })();
+  }, []);
 
   return (
     <Grid
@@ -44,13 +98,14 @@ export default async function ({ loaderData }: Route.ComponentProps): Promise<Re
         bg="bg-variant"
         w="full"
       >
+        {/* eslint-disable-next-line react-dom/no-missing-iframe-sandbox */}
         <iframe
           className={css({
             w: "full",
             h: "full",
             roundedBottom: "lg",
           })}
-          sandbox="allow-scripts"
+          ref={embedRef}
           src={`/booths/embed/${booth.id}/index.html`}
           title={booth.name}
         >
@@ -75,7 +130,15 @@ export default async function ({ loaderData }: Route.ComponentProps): Promise<Re
             {booth.name}
           </p.p>
         </HStack>
-        <p.div w="4em" />
+        <p.div>
+          <HStack>
+            <MoneyBag />
+            <p.p>
+              ¥
+              {sharedBudget.toLocaleString()}
+            </p.p>
+          </HStack>
+        </p.div>
       </HStack>
     </Grid>
   );
